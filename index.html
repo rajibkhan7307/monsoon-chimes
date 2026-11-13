@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Monsoon Chimes — a hands-first VR music garden</title>
+<meta name="description" content="Monsoon Chimes: a hands-first WebXR music garden. Strike floating brass chimes with your hands, play free or follow the melody.">
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+    background: #0d1526; font-family: Georgia, 'Times New Roman', serif; }
+  #scene { position: fixed; inset: 0; display: block; touch-action: none; }
+  #ui { position: fixed; inset: 0; pointer-events: none; color: #f5ead2;
+    text-shadow: 0 1px 6px rgba(0,0,0,.7); user-select: none; -webkit-user-select: none; }
+  #title { position: absolute; top: 14px; left: 0; right: 0; text-align: center; }
+  #title h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); font-weight: normal;
+    letter-spacing: .12em; color: #ffe9a8; }
+  #title p { margin: 2px 0 0; font-size: clamp(12px, 2vw, 15px); font-style: italic;
+    color: #cfe3d8; }
+  #panel { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    pointer-events: auto; width: min(94vw, 560px); }
+  #scorebar { display: flex; gap: 18px; font-size: 17px; background: rgba(10, 20, 40, .55);
+    border: 1px solid rgba(255, 233, 168, .35); border-radius: 999px;
+    padding: 7px 18px; backdrop-filter: blur(4px); }
+  #scorebar b { color: #ffe9a8; font-weight: normal; }
+  #modeRow { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  button { pointer-events: auto; cursor: pointer; font-family: inherit;
+    font-size: 16px; letter-spacing: .04em; color: #1a2436;
+    background: linear-gradient(180deg, #ffe9a8, #e8b64c); border: none;
+    border-radius: 999px; padding: 11px 20px; box-shadow: 0 2px 10px rgba(0,0,0,.45); }
+  button:hover { filter: brightness(1.08); }
+  button.secondary { background: rgba(245, 234, 210, .92); }
+  button:disabled { opacity: .55; cursor: default; }
+  button.active { outline: 3px solid #fff3c4; }
+  #melodyRow { display: none; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  #melodyRow.show { display: flex; }
+  #melodyRow button { font-size: 14px; padding: 8px 14px; }
+  #message { min-height: 24px; font-size: 18px; font-style: italic; text-align: center;
+    color: #ffe9a8; }
+  #hint { position: absolute; left: 50%; top: 96px; transform: translateX(-50%);
+    font-size: 14px; font-style: italic; color: #cfe3d8; text-align: center;
+    background: rgba(10, 20, 40, .45); border-radius: 999px; padding: 6px 14px;
+    white-space: nowrap; max-width: 94vw; overflow: hidden; text-overflow: ellipsis; }
+  #vrBtn { position: absolute; top: 14px; right: 14px; }
+  #soundBtn { position: absolute; top: 14px; left: 14px; padding: 9px 14px; font-size: 14px; }
+  #vrNote { position: absolute; top: 64px; right: 14px; font-size: 12px; font-style: italic;
+    color: #cfe3d8; max-width: 220px; text-align: right; }
+  #loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: #0d1526; color: #ffe9a8; font-size: 20px; font-style: italic; z-index: 10; }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="loading">Monsoon Chimes is tuning up&hellip;</div>
+
+<div id="ui">
+  <div id="title">
+    <h1>MONSOON CHIMES</h1>
+    <p>a quiet music garden in the rain</p>
+  </div>
+  <button id="soundBtn" type="button">Sound: On</button>
+  <button id="vrBtn" type="button" style="display:none">Enter VR</button>
+  <div id="vrNote"></div>
+  <div id="hint">Move your hand across a chime to ring it &mdash; or click / tap one.</div>
+  <div id="panel">
+    <div id="message">Welcome. Strike a chime to begin.</div>
+    <div id="scorebar">
+      <span>Score <b id="score">0</b></span>
+      <span>Combo <b id="combo">0</b></span>
+      <span>Stars <b id="stars">&mdash;</b></span>
+    </div>
+    <div id="modeRow">
+      <button id="freeBtn" type="button" class="active">Free Play</button>
+      <button id="melodyBtn" type="button">Follow the Melody</button>
+    </div>
+    <div id="melodyRow">
+      <button type="button" data-melody="0">1 &middot; First Rain</button>
+      <button type="button" data-melody="1">2 &middot; Lotus Bloom</button>
+      <button type="button" data-melody="2">3 &middot; Monsoon Night</button>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
