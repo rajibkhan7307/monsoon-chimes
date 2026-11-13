@@ -111,6 +111,7 @@ const Game = {
   expected: 0,             // position inside the melody the player must match
   score: 0, combo: 0, bestCombo: 0, mistakes: 0, stars: 0,
   timers: [],
+  comboTimer: null,
   clearTimers() { for (const t of this.timers) clearTimeout(t); this.timers = []; },
   after(ms, fn) { this.timers.push(setTimeout(fn, ms)); },
 };
@@ -463,7 +464,16 @@ function strikeChime(index, { fromPlayer = true, silent = false } = {}) {
     }
   } else if (Game.mode === 'free' && fromPlayer) {
     Game.score += 10;
-    Game.combo = 0;
+    Game.combo++;
+    Game.bestCombo = Math.max(Game.bestCombo, Game.combo);
+    clearTimeout(Game.comboTimer);
+    Game.comboTimer = setTimeout(() => { Game.combo = 0; updateScoreboard(); }, 2500);
+    const newStars = Game.bestCombo >= 20 ? 3 : Game.bestCombo >= 10 ? 2 : Game.bestCombo >= 5 ? 1 : 0;
+    if (newStars > Game.stars) {
+      Game.stars = newStars;
+      setMessage(newStars >= 3 ? 'Amazing! 3 stars — you are a monsoon maestro!' : 'Star earned! Keep the rhythm going!');
+      if (newStars >= 3) celebrationBurst();
+    }
   }
   updateScoreboard();
 }
@@ -481,6 +491,7 @@ function lightChime(index) {
 // ---------------------------------------------------------------- melody mode
 function startMelody(index) {
   Game.clearTimers();
+  clearTimeout(Game.comboTimer);
   Game.mode = 'melody';
   Game.melodyIndex = index;
   Game.expected = 0;
@@ -503,6 +514,7 @@ function startMelody(index) {
 
 function setFreeMode() {
   Game.clearTimers();
+  clearTimeout(Game.comboTimer);
   Game.mode = 'free';
   Game.melodyIndex = -1;
   Game.expected = 0;
